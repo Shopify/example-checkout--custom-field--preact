@@ -1,5 +1,4 @@
 import '@shopify/ui-extensions/preact';
-import {useMetafield} from "@shopify/ui-extensions/checkout/preact";
 import {render} from "preact";
 import {useState} from "preact/hooks";
 
@@ -14,6 +13,7 @@ function Extension() {
   // [START custom-field.instruction-ui]
   const {
     applyMetafieldChange,
+    appMetafields,
     i18n: {translate},
     target: {value: deliveryGroupList},
   } = shopify;
@@ -28,10 +28,12 @@ function Extension() {
 
   // [START custom-field.use-metafield]
   // Get a reference to the metafield
-  const deliveryInstructions = useMetafield({
-    namespace: metafieldNamespace,
-    key: metafieldKey,
-  });
+  const deliveryInstructions = appMetafields.value.find(
+    (appMetafield) =>
+      appMetafield.target.type === 'cart' &&
+      appMetafield.metafield.namespace === metafieldNamespace &&
+      appMetafield.metafield.key === metafieldKey,
+  );
   // [END custom-field.use-metafield]
 
   // Guard against duplicate rendering of `shipping-option-list.render-after` target for one-time purchase and subscription sections. Calling `applyMetafieldsChange()` on the same namespace-key pair from duplicated extensions would otherwise cause an overwrite of the metafield value.
@@ -55,17 +57,19 @@ function Extension() {
           rows={3}
           // [START custom-field.update-metafield]
           onBlur={(event) => {
-            // Apply the change to the metafield
+            // Apply the change to the cart metafield
             applyMetafieldChange({
-              type: "updateMetafield",
-              namespace: metafieldNamespace,
-              key: metafieldKey,
-              valueType: "string",
-              value: event.target.value,
+              type: "updateCartMetafield",
+              metafield: {
+                namespace: metafieldNamespace,
+                key: metafieldKey,
+                type: "multi_line_text_field",
+                value: event.target.value,
+              }
             })
           }}
           // [END custom-field.update-metafield]
-          value={`${deliveryInstructions?.value || ''}`}
+          value={`${deliveryInstructions?.metafield?.value || ''}`}
         />
       )}
     </s-stack>

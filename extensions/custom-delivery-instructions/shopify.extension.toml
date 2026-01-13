@@ -21,6 +21,12 @@ module = "./src/Checkout.jsx"
 target = "purchase.checkout.shipping-option-list.render-after"
 # [END custom-field.ext-config]
 
+# [START custom-field.request-metafield]
+[[extensions.targeting.metafields]]
+namespace = "yourAppNamespace"
+key = "deliveryInstructions"
+# [END custom-field.request-metafield]
+
 [extensions.capabilities]
 # Gives your extension access to directly query Shopify’s storefront API.
 # https://shopify.dev/docs/api/checkout-ui-extensions/latest/configuration#api-access
